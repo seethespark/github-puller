@@ -2,7 +2,8 @@ var http = require('http');
 var gitHubWebhookHandler = require('github-webhook-handler');
 var GitHubApi = require("github");
 
-var handler = gitHubWebhookHandler({ path: '/i-flicks', secret: 'lorcanvida' });
+var iFLicksHandler = gitHubWebhookHandler({ path: '/i-flicks', secret: 'lorcanvida' });
+var gitHubPullerHandler = gitHubWebhookHandler({ path: '/gitHubPuller', secret: 'lorcanvida' });
 
 var gitHubApi = new GitHubApi({
     // required
@@ -18,24 +19,24 @@ var gitHubApi = new GitHubApi({
 });
 
 http.createServer(function (req, res) {
-    handler(req, res, function (err) {
+    gitHubPullerHandler(req, res, function (err) {
         res.statusCode = 404;
         res.end('no such location');
     });
 }).listen(7777);
 
-handler.on('error', function (err) {
+gitHubPullerHandler.on('error', function (err) {
     console.error('Error:', err.message);
 });
 
-handler.on('push', function (event) {
+gitHubPullerHandler.on('push', function (event) {
     console.log('Received a push event for %s to %s',
         event.payload.repository.name,
         event.payload.ref);
     /// get https://github.com/seethespark/i-flicks/archive/master.zip
 });
 
-handler.on('issues', function (event) {
+gitHubPullerHandler.on('issues', function (event) {
     console.log('Received an issue event for %s action=%s: #%d %s',
         event.payload.repository.name,
         event.payload.action,
