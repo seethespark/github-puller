@@ -1,22 +1,12 @@
 var http = require('http');
+var path = require('path');
+var fs = require('filesystem');
 var gitHubWebhookHandler = require('github-webhook-handler');
-var GitHubApi = require("github");
+var settings = {};
+settings.localPath = 'c:\\blaa';
 
 var iFLicksHandler = gitHubWebhookHandler({ path: '/i-flicks', secret: 'lorcanvida' });
 var gitHubPullerHandler = gitHubWebhookHandler({ path: '/gitHubPuller', secret: 'lorcanvida' });
-
-var gitHubApi = new GitHubApi({
-    // required
-    version: "3.0.0",
-    // optional
-    debug: true,
-    protocol: "https",
-    host: "api.github.com", // should be api.github.com for GitHub
-    timeout: 5000,
-    headers: {
-        "user-agent": "Nicks-GitHub-App" // GitHub is happy with a unique user agent
-    }
-});
 
 http.createServer(function (req, res) {
     gitHubPullerHandler(req, res, function (err) {
@@ -44,8 +34,10 @@ gitHubPullerHandler.on('push', function (event) {
 	
 	for (i = 0; i < added.length; i++) {
 		http.get(remotePath + '/' + added[i], function(err, res) {
-			if (err) { errorHandler('push1', errl); return; )
-			fs.write(res.body, function(err) {}
+			if (err) { errorHandler('push1', err); return; )
+			fs.write(path.join(settings.localPath, added[i]), res.body, function(err) {
+                if (err) { errorHandler('push2', err); return; )
+            }
 		}
 	}
 	
