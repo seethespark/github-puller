@@ -24,12 +24,33 @@ http.createServer(function (req, res) {
         res.end('no such location');
     });
 }).listen(7777);
-
+function errorHandler(err, location, res) {
+    console.log('Error at ', location, '.', 'Message: ', err.message);
+    if (res) {
+        res.status(500);
+        res.end();
+    }
+}
 gitHubPullerHandler.on('error', function (err) {
     console.error('Error:', err.message);
 });
 
 gitHubPullerHandler.on('push', function (event) {
+	var added =event.payload.commits.added,
+	    removed =event.payload.commits.removed,
+	    changed =event.payload.commits.changed,
+	    remotePath =event.payload.url,
+	    i;
+	
+	for (i = 0; i < added.length; i++) {
+		http.get(remotePath + '/' + added[i], function(err, res) {
+			if (err) { errorHandler('push1', errl); return; )
+			fs.write(res.body, function(err) {}
+		}
+	}
+	
+	
+	
     console.log('Received a push event for %s to %s',
         event.payload.repository.name,
         event.payload.ref);
