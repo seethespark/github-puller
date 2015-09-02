@@ -24,6 +24,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
 		    });
 	    }
 
+
         console.log('Received a push event for %s to %s',
             event.payload.repository.name,
             event.payload.ref);
