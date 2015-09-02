@@ -5,7 +5,7 @@ var fs = require('fs');
 var gitHubWebhookHandler = require('github-webhook-handler');
 var settings = {};
 
-settings.hooks = [{name: '/gitHubPuller', localPath: ''}];
+settings.hooks = [{name: '/gitHubPuller', localPath: '/var/www/gitHubPuller'}];
 
 for (var i = 0; i < settings.hooks.length; i++) {
 	var handler = gitHubWebhookHandler({ path: settings.hooks[i].name, secret: 'lorcanvida' });
@@ -20,7 +20,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
 		console.log(remotePath + '/' + modified[j]);
 		    https.get(remotePath + '/' + modified[j], function(res) {
 			    
-			    fs.write(path.join(settings.localPath, modified[j]), res.body, function(err) {
+			    fs.write(path.join(settings.hooks[i].localPath, modified[j]), res.body, function(err) {
                     if (err) { errorHandler(err, 'push2'); return; }
                 });
 		    }).on('error', function(err) {
