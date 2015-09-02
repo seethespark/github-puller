@@ -8,7 +8,8 @@ var settings = {};
 settings.hooks = [{name: '/gitHubPuller', localPath: '/var/www/gitHubPuller'}];
 
 for (var i = 0; i < settings.hooks.length; i++) {
-    var handler = gitHubWebhookHandler({ path: settings.hooks[i].name, secret: 'lorcanvida' });
+    var localPath = settings.hooks[i].localPath, 
+        handler = gitHubWebhookHandler({ path: settings.hooks[i].name, secret: 'lorcanvida' });
     handler.on('push', function (event) {
         var added = event.payload.head_commit.added,
             removed = event.payload.head_commit.removed,
@@ -16,9 +17,8 @@ for (var i = 0; i < settings.hooks.length; i++) {
             remotePath = event.payload.head_commit.url,
             j;
         for (j = 0; j < modified.length; j++) {
-            console.log(settings.hooks[i]);
             https.get(remotePath + '/' + modified[j], function(res) {
-                fs.write(path.join(settings.hooks[i].localPath, modified[j]), res.body, function(err) {
+                fs.write(path.join(localPath, modified[j]), res.body, function(err) {
                     if (err) { errorHandler(err, 'push2'); return; }
                 });
             })
