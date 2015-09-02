@@ -4,7 +4,7 @@ var fs = require('fs');
 var gitHubWebhookHandler = require('github-webhook-handler');
 var settings = {};
 
-settings.hooks = [{name: 'gitHubPuller', localPath: ''}];
+settings.hooks = [{name: '/gitHubPuller', localPath: ''}];
 
 for (var i = 0; i < settings.hooks.length; i++) {
 	var handler = gitHubWebhookHandler({ path: settings.hooks[i].name, secret: 'lorcanvida' });
@@ -36,7 +36,6 @@ for (var i = 0; i < settings.hooks.length; i++) {
 
     settings.hooks[i].handler = handler;
 }
-
 
 http.createServer(function (req, res) {
 	console.log(req.url);
