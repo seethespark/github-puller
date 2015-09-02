@@ -16,7 +16,9 @@ for (var i = 0; i < settings.hooks.length; i++) {
             modified = event.payload.head_commit.modified,
             remotePath = event.payload.head_commit.url,
             j;
+        console.log(localPath);
         for (j = 0; j < modified.length; j++) {
+            console.log(modified[j]);
             https.get(remotePath + '/' + modified[j], function(res) {
                 fs.write(path.join(localPath, modified[j]), res.body, function(err) {
                     if (err) { errorHandler(err, 'push2'); return; }
