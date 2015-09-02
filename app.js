@@ -50,6 +50,10 @@ http.createServer(function (req, res) {
 }).listen(7777);
 
 function errorHandler(err, location, res) {
+	var message = err;
+	if (err.message) {
+        message = err.message;
+    }
     console.log('Error at ', location, '.', 'Message: ', err.message);
     if (res) {
         res.status(500);
