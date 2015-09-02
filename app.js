@@ -21,15 +21,15 @@ for (var i = 0; i < settings.hooks.length; i++) {
             remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
             https.get(remotePath + '/' + mod, function(res) {
                // console.log(res.body);
+               res.on('data', function(chunk) { body += chunk; });
+               res.on('end', function() {
+              //  console.log(body);
                 
-            })
-            .on('data', function(chunk) { body += chunk; })
-            .on('end', function() {
-                console.log(body);
-                
-                fs.write(path.join(localPath, mod), body, function(err) {
-                    if (err) { errorHandler(err, 'push2'); return; }
+                    fs.write(path.join(localPath, mod), body, function(err) {
+                        if (err) { errorHandler(err, 'push2'); return; }
+                    });
                 });
+                
             })
             .on('error', function(err) {
                 if (err) { errorHandler(err, 'push1'); return; }
