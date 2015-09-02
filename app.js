@@ -15,7 +15,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
             removed = event.payload.head_commit.removed,
             modified = event.payload.head_commit.modified,
             remotePath = event.payload.head_commit.url,
-            remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master';
+            remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
             j;
         for (j = 0; j < modified.length; j++) {
             var mod = modified[j], body = '';
