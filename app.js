@@ -12,13 +12,13 @@ for (var i = 0; i < settings.hooks.length; i++) {
 		var added = event.payload.head_commit.added,
 	        removed = event.payload.head_commit.removed,
 	        modified = event.payload.head_commit.modified,
-	        remotePath = event.payload.url,
+	        remotePath = event.payload.head_commit.url,
 	        j;
 	
 	    for (j = 0; j < modified.length; j++) {
-		    http.get(remotePath + '/' + added[j], function(err, res) {
+		    http.get(remotePath + '/' + modified[j], function(err, res) {
 			    if (err) { errorHandler('push1', err); return; }
-			    fs.write(path.join(settings.localPath, added[j]), res.body, function(err) {
+			    fs.write(path.join(settings.localPath, modified[j]), res.body, function(err) {
                     if (err) { errorHandler('push2', err); return; }
                 });
 		    });
