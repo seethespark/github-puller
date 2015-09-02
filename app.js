@@ -17,6 +17,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
 	        j;
 	
 	    for (j = 0; j < modified.length; j++) {
+		console.log(remotePath + '/' + modified[j]);
 		    https.get(remotePath + '/' + modified[j], function(err, res) {
 			    if (err) { errorHandler(err, 'push1'); return; }
 			    fs.write(path.join(settings.localPath, modified[j]), res.body, function(err) {
@@ -54,7 +55,7 @@ function errorHandler(err, location, res) {
 	if (err.message) {
         message = err.message;
     }
-    console.log('Error at ', location, '.', 'Message: ', err.message);
+    console.log('Error at ', location, '.', 'Message: ', message);
     if (res) {
         res.status(500);
         res.end();
