@@ -37,12 +37,15 @@ for (var i = 0; i < settings.hooks.length; i++) {
     settings.hooks[i].handler = handler;
 }
 http.createServer(function (req, res) {
+	console.log(req.url);
 	for (var i = 0; i < settings.hooks.length; i++) {
-		settings.hooks[i].handler(req, res, function (err) {
-	        res.statusCode = 404;
-	        res.end('no such location');
-	    });
+		if (req.url === settings.hooks[i].name) {
+             settings.hooks[i].handler(req, res);
+             return;
+         }
 	}
+	res.statusCode = 404;
+    res.end('no such location');
 }).listen(7777);
 
 function errorHandler(err, location, res) {
