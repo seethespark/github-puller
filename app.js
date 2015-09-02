@@ -37,6 +37,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
     settings.hooks[i].handler = handler;
 }
 
+
 http.createServer(function (req, res) {
 	console.log(req.url);
 	for (var i = 0; i < settings.hooks.length; i++) {
