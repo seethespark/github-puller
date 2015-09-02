@@ -18,9 +18,9 @@ for (var i = 0; i < settings.hooks.length; i++) {
 	
 	    for (j = 0; j < modified.length; j++) {
 		    https.get(remotePath + '/' + modified[j], function(err, res) {
-			    if (err) { errorHandler('push1', err); return; }
+			    if (err) { errorHandler(err, 'push1'); return; }
 			    fs.write(path.join(settings.localPath, modified[j]), res.body, function(err) {
-                    if (err) { errorHandler('push2', err); return; }
+                    if (err) { errorHandler(err, 'push2'); return; }
                 });
 		    });
 	    }
@@ -39,7 +39,6 @@ for (var i = 0; i < settings.hooks.length; i++) {
 }
 
 http.createServer(function (req, res) {
-	console.log(req.url);
 	for (var i = 0; i < settings.hooks.length; i++) {
 		if (req.url === settings.hooks[i].name) {
              settings.hooks[i].handler(req, res);
