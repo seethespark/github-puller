@@ -1,4 +1,5 @@
 var http = require('http');
+var https = require('https');
 var path = require('path');
 var fs = require('fs');
 var gitHubWebhookHandler = require('github-webhook-handler');
@@ -16,7 +17,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
 	        j;
 	
 	    for (j = 0; j < modified.length; j++) {
-		    http.get(remotePath + '/' + modified[j], function(err, res) {
+		    https.get(remotePath + '/' + modified[j], function(err, res) {
 			    if (err) { errorHandler('push1', err); return; }
 			    fs.write(path.join(settings.localPath, modified[j]), res.body, function(err) {
                     if (err) { errorHandler('push2', err); return; }
