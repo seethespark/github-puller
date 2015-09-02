@@ -15,15 +15,16 @@ for (var i = 0; i < settings.hooks.length; i++) {
             removed = event.payload.head_commit.removed,
             modified = event.payload.head_commit.modified,
             remotePath = event.payload.head_commit.url,
+            remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master';
             j;
         for (j = 0; j < modified.length; j++) {
             var mod = modified[j], body = '';
-            remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
+           // remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
             https.get(remotePath + '/' + mod, function(res) {
                // console.log(res.body);
                res.on('data', function(chunk) { body += chunk; });
                res.on('end', function() {
-               console.log(body);
+               //console.log(body);
                 
                     fs.writeFile(path.join(localPath, mod), body, function(err) {
                         if (err) { errorHandler(err, 'push2'); return; }
