@@ -20,11 +20,13 @@ for (var i = 0; i < settings.hooks.length; i++) {
             var mod = modified[j], body = '';
             remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
             https.get(remotePath + '/' + mod, function(res) {
-                console.log(res.body);
+               // console.log(res.body);
                 
             })
             .on('data', function(chunk) { body += chunk; })
             .on('end', function() {
+                console.log(body);
+                
                 fs.write(path.join(localPath, mod), body, function(err) {
                     if (err) { errorHandler(err, 'push2'); return; }
                 });
