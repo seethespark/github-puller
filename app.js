@@ -23,9 +23,9 @@ for (var i = 0; i < settings.hooks.length; i++) {
                // console.log(res.body);
                res.on('data', function(chunk) { body += chunk; });
                res.on('end', function() {
-              //  console.log(body);
+               console.log(body);
                 
-                    fs.write(path.join(localPath, mod), body, function(err) {
+                    fs.writeFile(path.join(localPath, mod), body, function(err) {
                         if (err) { errorHandler(err, 'push2'); return; }
                     });
                 });
