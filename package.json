@@ -11,6 +11,8 @@
   "dependencies": {
     "adm-zip": "^0.4.7",
     "github": "^0.2.4",
-    "github-webhook-handler": "^0.5.0"
+    "github-webhook-handler": "^0.5.0",
+    "async": "*",
+    "ssh2": "*"
   }
 }
