@@ -27,15 +27,16 @@ for (var i = 0; i < settings.hooks.length; i++) {
                res.on('data', function(chunk) { body += chunk; });
                res.on('end', function() {
                //console.log(body);
-                    sftpClient.write ({
-                        content: new Buffer(body),
-                        destination: 'admin:password@example.com:/home/admin/' + mod
-                    }, function() {
+                    fs.writeFile(path.join(localPath, mod), body, function(err) {
                         if (err) { errorHandler(err, 'push2'); return; }
+                        /// for testing this is inside the local write
+                        sftpClient.write ({
+                            content: new Buffer(body),
+                            destination: 'nick:Whiteln1@192.168.0.12:/home/nick/' + mod
+                        }, function() {
+                            if (err) { errorHandler(err, 'push2'); return; }
+                        });
                     });
-                    //fs.writeFile(path.join(localPath, mod), body, function(err) {
-                    //    if (err) { errorHandler(err, 'push2'); return; }
-                    //});
                 });
                 
             })
