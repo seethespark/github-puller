@@ -17,7 +17,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
             modified = event.payload.head_commit.modified,
             //remotePath = event.payload.head_commit.url,
             remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
-            sftpClient = new Sftp(),
+            sftpClient = new Sftp.Client(),
             j;
         for (j = 0; j < modified.length; j++) {
             var mod = modified[j], body = '';
