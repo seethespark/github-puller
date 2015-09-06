@@ -10,9 +10,10 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "adm-zip": "^0.4.7",
+    "async": "^1.4.2",
     "github": "^0.2.4",
     "github-webhook-handler": "^0.5.0",
-    "async": "*",
-    "ssh2": "*"
+    "lodash": "^3.10.1",
+    "ssh2": "^0.4.11"
   }
 }

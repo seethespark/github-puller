@@ -3,6 +3,7 @@ var https = require('https');
 var path = require('path');
 var fs = require('fs');
 var gitHubWebhookHandler = require('github-webhook-handler');
+var Sftp = require('./sftp');
 var settings = {};
 
 settings.hooks = [{name: '/gitHubPuller', localPath: '/var/www/gitHubPuller'}];
@@ -14,8 +15,9 @@ for (var i = 0; i < settings.hooks.length; i++) {
         var added = event.payload.head_commit.added,
             removed = event.payload.head_commit.removed,
             modified = event.payload.head_commit.modified,
-            remotePath = event.payload.head_commit.url,
+            //remotePath = event.payload.head_commit.url,
             remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
+            sftpClient = new Sftp(),
             j;
         for (j = 0; j < modified.length; j++) {
             var mod = modified[j], body = '';
@@ -25,10 +27,15 @@ for (var i = 0; i < settings.hooks.length; i++) {
                res.on('data', function(chunk) { body += chunk; });
                res.on('end', function() {
                //console.log(body);
-               
-                    fs.writeFile(path.join(localPath, mod), body, function(err) {
+                    sftpClient.write ({
+                        content: new Buffer(body),
+                        destination: 'admin:password@example.com:/home/admin/' + mod
+                    }, function() {
                         if (err) { errorHandler(err, 'push2'); return; }
                     });
+                    //fs.writeFile(path.join(localPath, mod), body, function(err) {
+                    //    if (err) { errorHandler(err, 'push2'); return; }
+                    //});
                 });
                 
             })
