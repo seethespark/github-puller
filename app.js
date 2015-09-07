@@ -50,7 +50,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
                             });
                         } catch (err) {
                             errorHandler(err, 'push3');
-                            
+                           
                         }
                     });
                 });
