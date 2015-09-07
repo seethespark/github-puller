@@ -6,7 +6,11 @@ var gitHubWebhookHandler = require('github-webhook-handler');
 var Sftp = require('./sftp');
 var settings = {};
 
-settings.hooks = [{name: '/gitHubPuller', localPath: '/var/www/gitHubPuller'}];
+settings.hooks = [{name: '/gitHubPuller', localPath: '/var/www/gitHubPuller', sftp: {
+                username: 'nick',
+                password: '654321a',
+                host: '192.168.0.12',
+               }}];
 
 for (var i = 0; i < settings.hooks.length; i++) {
     var localPath = settings.hooks[i].localPath, 
@@ -17,11 +21,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
             modified = event.payload.head_commit.modified,
             //remotePath = event.payload.head_commit.url,
             remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
-            sftpClient = new Sftp.Client( {
-                username: 'nick',
-                password: '654321a',
-                host: '192.168.0.12',
-               }),
+            sftpClient = new Sftp.Client(settings.sftp),
             j;
         sftpClient.on('error', function(err) {
             errorHandler(err, 'sftpCluent');
