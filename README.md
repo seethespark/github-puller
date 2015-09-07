@@ -12,6 +12,6 @@ If localPath is specified then the sftp entries are ignored.
         password: Lan server password,
         host: Lan server hostname or IP address,
         }
-    }];
+    };
 
 It's not finished yet.
