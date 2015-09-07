@@ -19,7 +19,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
             remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
             sftpClient = new Sftp.Client( {
                 username: 'nick',
-                password: 'Whiteln1',
+                password: '654321a',
                 host: '192.168.0.12',
                }),
             j;
