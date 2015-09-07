@@ -6,11 +6,15 @@ var gitHubWebhookHandler = require('github-webhook-handler');
 var Sftp = require('./sftp');
 var settings = {};
 
-settings.hooks = [{name: '/gitHubPuller', localPath: '/var/www/gitHubPuller', sftp: {
-                username: 'nick',
-                password: '654321a',
-                host: '192.168.0.12',
-               }}];
+settings.hooks = [{name: '/gitHubPuller',
+    localPath: '/var/www/gitHubPuller',
+    sftpPath: '/home/nick',
+    sftp: {
+        username: 'nick',
+        password: '654321a',
+        host: '192.168.0.12',
+        }
+    }];
 
 for (var i = 0; i < settings.hooks.length; i++) {
     var localPath = settings.hooks[i].localPath, 
@@ -39,7 +43,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
                         /// for testing this is inside the local write
                         sftpClient.write ({
                             content: new Buffer(body),
-                            destination: '/home/nick/' + mod
+                            destination: path.join(sftpPath, mod)
                         }, function() {
                             if (err) { errorHandler(err, 'push2'); return; }
                         });
