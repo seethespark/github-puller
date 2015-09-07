@@ -19,7 +19,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
             remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
             sftpClient = new Sftp.Client( {
                 username: 'nick',
-                password: '654321a',
+                password: 'Whiteln1',
                 host: '192.168.0.12',
                }),
             j;
@@ -30,7 +30,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
                // console.log(res.body);
                res.on('data', function(chunk) { body += chunk; });
                res.on('end', function() {
-               //console.log(body);
+               //console.log(body); 
                     fs.writeFile(path.join(localPath, mod), body, function(err) {
                         if (err) { errorHandler(err, 'push2'); return; }
                         /// for testing this is inside the local write
