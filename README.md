@@ -5,5 +5,4 @@ Update settings.js with the GitHub hook path and your local server details.
 If localPath is specified then the sftp entries are ignored.
 
 
-
 It's not finished yet.
