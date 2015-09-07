@@ -17,7 +17,11 @@ for (var i = 0; i < settings.hooks.length; i++) {
             modified = event.payload.head_commit.modified,
             //remotePath = event.payload.head_commit.url,
             remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
-            sftpClient = new Sftp.Client(),
+            sftpClient = new Sftp.Client( {
+                username: 'nick',
+                password: 'Whiteln1',
+                host: '192.168.0.12',
+               }),
             j;
         for (j = 0; j < modified.length; j++) {
             var mod = modified[j], body = '';
@@ -32,9 +36,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
                         /// for testing this is inside the local write
                         sftpClient.write ({
                             content: new Buffer(body),
-                            username: 'nick',
-                            hst: '192.168.0.12',
-                            destination: 'nick:Whiteln1@192.168.0.12:/home/nick/' + mod
+                            destination: /home/nick/' + mod
                         }, function() {
                             if (err) { errorHandler(err, 'push2'); return; }
                         });
