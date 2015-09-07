@@ -36,7 +36,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
                         /// for testing this is inside the local write
                         sftpClient.write ({
                             content: new Buffer(body),
-                            destination: /home/nick/' + mod
+                            destination: '/home/nick/' + mod
                         }, function() {
                             if (err) { errorHandler(err, 'push2'); return; }
                         });
