@@ -41,12 +41,16 @@ for (var i = 0; i < settings.hooks.length; i++) {
                     fs.writeFile(path.join(localPath, mod), body, function(err) {
                         if (err) { errorHandler(err, 'push2'); return; }
                         /// for testing this is inside the local write
-                        sftpClient.write ({
-                            content: new Buffer(body),
-                            destination: path.join(settings.hooks[i].sftpPath, mod)
-                        }, function() {
-                            if (err) { errorHandler(err, 'push2'); return; }
-                        });
+                        try {
+                            sftpClient.write ({
+                                content: new Buffer(body),
+                                destination: path.join(settings.hooks[i].sftpPath, mod)
+                            }, function() {
+                                if (err) { errorHandler(err, 'push2'); return; }
+                            });
+                        } catch (err) {
+                            errorHandler(err, 'push3');
+                        }
                     });
                 });
                 
