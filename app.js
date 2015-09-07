@@ -25,7 +25,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
             modified = event.payload.head_commit.modified,
             //remotePath = event.payload.head_commit.url,
             remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
-            sftpClient = new Sftp.Client(settings.sftp),
+            sftpClient = new Sftp.Client(settings.hooks[i].sftp),
             j;
         sftpClient.on('error', function(err) {
             errorHandler(err, 'sftpCluent');
@@ -43,7 +43,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
                         /// for testing this is inside the local write
                         sftpClient.write ({
                             content: new Buffer(body),
-                            destination: path.join(sftpPath, mod)
+                            destination: path.join(settings.hooks[i].sftpPath, mod)
                         }, function() {
                             if (err) { errorHandler(err, 'push2'); return; }
                         });
