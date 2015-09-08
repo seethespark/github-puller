@@ -18,17 +18,19 @@ settings.hooks = [{name: '/gitHubPuller',
 
 for (var i = 0; i < settings.hooks.length; i++) {
     var localPath = settings.hooks[i].localPath, 
-        handler = gitHubWebhookHandler({ path: settings.hooks[i].name, secret: 'lorcanvida' });
+        handler = gitHubWebhookHandler({ path: settings.hooks[i].name, secret: 'lorcanvida' }),
+        sftpSettings = settings.hooks[i].sftp,
+        sftpPath = settings.hooks[i].sftpPath;
     handler.on('push', function (event) {
         var added = event.payload.head_commit.added,
             removed = event.payload.head_commit.removed,
             modified = event.payload.head_commit.modified,
             //remotePath = event.payload.head_commit.url,
             remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
-            sftpClient = new Sftp.Client(settings.hooks[i].sftp),
+            sftpClient = new Sftp.Client(sftpSettings),
             j;
         sftpClient.on('error', function(err) {
-            errorHandler(err, 'sftpCluent');
+            errorHandler(err, 'sftpClient');
         });
         for (j = 0; j < modified.length; j++) {
             var mod = modified[j], body = '';
@@ -44,7 +46,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
                         try {
                             sftpClient.write ({
                                 content: new Buffer(body),
-                                destination: path.join(settings.hooks[i].sftpPath, mod)
+                                destination: path.join(sftpPath, mod)
                             }, function() {
                                 if (err) { errorHandler(err, 'push2'); return; }
                             });
