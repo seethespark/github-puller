@@ -20,7 +20,8 @@ for (var i = 0; i < settings.hooks.length; i++) {
     var localPath = settings.hooks[i].localPath, 
         handler = gitHubWebhookHandler({ path: settings.hooks[i].name, secret: 'lorcanvida' }),
         sftpSettings = settings.hooks[i].sftp,
-        sftpPath = settings.hooks[i].sftpPath;
+        sftpPath = settings.hooks[i].sftpPath,
+        localPath = settings.hooks[i].localPath;
     handler.on('push', function (event) {
         var added = event.payload.head_commit.added,
             removed = event.payload.head_commit.removed,
@@ -40,7 +41,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
                res.on('data', function(chunk) { body += chunk; });
                res.on('end', function() {
                //console.log(body);
-                    fs.writeFile(path.join(settings.hooks[i].localPath, mod), body, function(err) {
+                    fs.writeFile(path.join(localPath, mod), body, function(err) {
                         if (err) { errorHandler(err, 'push2'); return; }
                         /// for testing this is inside the local write
                         try {
