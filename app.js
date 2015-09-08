@@ -51,7 +51,7 @@ for (var i = 0; i < settings.hooks.length; i++) {
                                 if (err) { errorHandler(err, 'push2'); return; }
                             });
                         } catch (err) {
-                            errorHandler(err, 'push3');   
+                            errorHandler(err, 'push3');    
                         }
                     });
                 });
