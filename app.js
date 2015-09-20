@@ -16,6 +16,7 @@ settings.hooks = [{name: '/gitHubPuller',
         }
     }];
 
+/// Get the GitHub file using HTTP once notified to do so.
 function getFile(fileName, localPath, remotePath, sftpClient) {
     var body = '';
    // remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
@@ -46,6 +47,7 @@ function getFile(fileName, localPath, remotePath, sftpClient) {
     });
 }
 
+/// Set up the listener for web hooks.
 function addHookHandler(localPath, hookName, sftpSettings, sftpPath) {
     var handler = gitHubWebhookHandler({ path: hookNname, secret: 'lorcanvida' }),
     handler.on('push', function (event) {
