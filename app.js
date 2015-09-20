@@ -56,7 +56,7 @@ function addHookHandler(localPath, hookName, sftpSettings, sftpPath) {
         }
         
         for (j = 0; j < added.length; j++) {
-            getFile(modified[j], localPath, remotePath, sftpClient);
+            getFile(added[j], localPath, remotePath, sftpClient);
         }
 
         console.log('Received a push event for %s to %s',
