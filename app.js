@@ -46,13 +46,8 @@ function getFile(fileName, localPath, remotePath, sftpClient) {
     });
 }
 
-/*TODO Variables will change and break when more than one hook is added.*/
-for (var i = 0; i < settings.hooks.length; i++) {
-    var localPath = settings.hooks[i].localPath, 
-        handler = gitHubWebhookHandler({ path: settings.hooks[i].name, secret: 'lorcanvida' }),
-        sftpSettings = settings.hooks[i].sftp,
-        sftpPath = settings.hooks[i].sftpPath,
-        localPath = settings.hooks[i].localPath;
+function addHookHandler(localPath, hookName, sftpSettings, sftpPath) {
+    var handler = gitHubWebhookHandler({ path: hookNname, secret: 'lorcanvida' }),
     handler.on('push', function (event) {
         var added = event.payload.head_commit.added,
             removed = event.payload.head_commit.removed,
@@ -80,8 +75,16 @@ for (var i = 0; i < settings.hooks.length; i++) {
     handler.on('error', function (err) {
         console.error('Error:', err.message);
     });
+    return handler;
+}
 
-    settings.hooks[i].handler = handler;
+for (var i = 0; i < settings.hooks.length; i++) {
+    var localPath = settings.hooks[i].localPath, 
+        sftpSettings = settings.hooks[i].sftp,
+        sftpPath = settings.hooks[i].sftpPath,
+        name = settings.hooks[i].name;
+
+    settings.hooks[i].handler = addHookHandler(localPath, name, sftpSettings, sftpPath);
 }
 
 http.createServer(function (req, res) {
