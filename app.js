@@ -6,17 +6,6 @@ var gitHubWebhookHandler = require('github-webhook-handler');
 var Sftp = require('./sftp');
 var settings = require('.settings');
 
-/*
-settings.hooks = [{name: '/gitHubPuller',
-    localPath: '/var/www/gitHubPuller',
-    sftpPath: '/home/nick',
-    sftp: {
-        username: 'nick',
-        password: '654321a',
-        host: '192.168.0.12',
-        }
-    }];
-*/
 /// Get the GitHub file using HTTP once notified to do so.
 function getFile(fileName, localPath, remotePath, sftpClient) {
     var body = '';
