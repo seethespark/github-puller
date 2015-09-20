@@ -49,7 +49,7 @@ function getFile(fileName, localPath, remotePath, sftpClient) {
 
 /// Set up the listener for web hooks.
 function addHookHandler(localPath, hookName, sftpSettings, sftpPath) {
-    var handler = gitHubWebhookHandler({ path: hookNname, secret: 'lorcanvida' }),
+    var handler = gitHubWebhookHandler({ path: hookName, secret: 'lorcanvida' });
     handler.on('push', function (event) {
         var added = event.payload.head_commit.added,
             removed = event.payload.head_commit.removed,
