@@ -1,3 +1,6 @@
+/**
+ * Example settings file. Rename to .settings.js for use.
+*/
 var settings = {};
 settings.hooks = [{name: '/gitHub name',
     localPath: '/local path if storing locally',
