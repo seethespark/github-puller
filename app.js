@@ -25,7 +25,7 @@ function getFile(fileName, localPath, remotePath, sftpClient) {
                     sftpClient.write ({
                         content: new Buffer(body),
                         destination: path.join(sftpPath, fileName)
-                    }, function() {
+                    }, function(err) {
                         if (err) { errorHandler(err, 'push2'); return; }
                     });
                 } catch (err) {
