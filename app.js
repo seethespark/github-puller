@@ -14,9 +14,12 @@ function getFile(fileName, localPath, remotePath, sftpClient) {
        // console.log(res.body);
        res.on('data', function(chunk) { body += chunk; });
        res.on('end', function() {
-       //console.log(body);
+       //console.log(body)
+       if (localPath) {
             fs.writeFile(path.join(localPath, fileName), body, function(err) {
                 if (err) { errorHandler(err, 'push2'); return; }
+           });
+       }
                 /// for testing this is inside the local write
                 try {
                     sftpClient.write ({
@@ -29,7 +32,6 @@ function getFile(fileName, localPath, remotePath, sftpClient) {
                     errorHandler(err, 'push3');    
                 }
             });
-        });
         
     })
     .on('error', function(err) {
