@@ -15,23 +15,24 @@ function getFile(fileName, localPath, remotePath, sftpClient) {
        res.on('data', function(chunk) { body += chunk; });
        res.on('end', function() {
        //console.log(body)
-       if (localPath) {
-            fs.writeFile(path.join(localPath, fileName), body, function(err) {
-                if (err) { errorHandler(err, 'push2'); return; }
-           });
-       }
-                /// for testing this is inside the local write
-                try {
-                    sftpClient.write ({
-                        content: new Buffer(body),
-                        destination: path.join(sftpPath, fileName)
-                    }, function(err) {
-                        if (err) { errorHandler(err, 'push2'); return; }
-                    });
-                } catch (err) {
-                    errorHandler(err, 'push3');    
-                }
-            });
+            if (localPath === 'z') {
+                fs.writeFile(path.join(localPath, fileName), body, function(err) {
+                    if (err) { errorHandler(err, 'push4'); return; }
+               });
+            }
+            /// for testing this is inside the local write
+            try {
+                console.log(path.join(sftpPath, fileName));
+                sftpClient.write ({
+                    content: new Buffer(body),
+                    destination: path.join(sftpPath, fileName)
+                }, function(err) {
+                    if (err) { errorHandler(err, 'push2'); return; }
+                });
+            } catch (err) {
+                errorHandler(err, 'push3');    
+            }
+        });
         
     })
     .on('error', function(err) {
@@ -82,10 +83,11 @@ for (var i = 0; i < settings.hooks.length; i++) {
 }
 
 http.createServer(function (req, res) {
+    console.log(settings.hooks);
     for (var i = 0; i < settings.hooks.length; i++) {
         if (req.url === settings.hooks[i].name) {
-             settings.hooks[i].handler(req, res);
-             return;
+            settings.hooks[i].handler(req, res);
+            return;
         }
     }
     res.statusCode = 404;
