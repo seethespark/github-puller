@@ -7,7 +7,7 @@ var Sftp = require('./sftp');
 var settings = require('./.settings.js');
 
 /// Get the GitHub file using HTTP once notified to do so. 
-function getFile(fileName, localPath, remotePath, sftpClient) {
+function getFile(fileName, localPath, remotePath, sftpClient, sftpPath) {
     var body = '';
    // remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
     https.get(remotePath + '/' + fileName, function(res) {
@@ -15,14 +15,13 @@ function getFile(fileName, localPath, remotePath, sftpClient) {
        res.on('data', function(chunk) { body += chunk; });
        res.on('end', function() {
        //console.log(body)
-            if (localPath === 'z') {
+            if (localPath !== undefined) {
                 fs.writeFile(path.join(localPath, fileName), body, function(err) {
                     if (err) { errorHandler(err, 'push4'); return; }
                });
             }
             /// for testing this is inside the local write
             try {
-                console.log(path.join(sftpPath, fileName));
                 sftpClient.write ({
                     content: new Buffer(body),
                     destination: path.join(sftpPath, fileName)
@@ -55,11 +54,11 @@ function addHookHandler(localPath, hookName, sftpSettings, sftpPath) {
             errorHandler(err, 'sftpClient');
         });
         for (j = 0; j < modified.length; j++) {
-            getFile(modified[j], localPath, remotePath, sftpClient);
+            getFile(modified[j], localPath, remotePath, sftpClient, sftpPath);
         }
         
         for (j = 0; j < added.length; j++) {
-            getFile(added[j], localPath, remotePath, sftpClient);
+            getFile(added[j], localPath, remotePath, sftpClient, sftpPath);
         }
 
         console.log('Received a push event for %s to %s',
@@ -83,7 +82,6 @@ for (var i = 0; i < settings.hooks.length; i++) {
 }
 
 http.createServer(function (req, res) {
-    console.log(settings.hooks);
     for (var i = 0; i < settings.hooks.length; i++) {
         if (req.url === settings.hooks[i].name) {
             settings.hooks[i].handler(req, res);
