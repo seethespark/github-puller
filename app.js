@@ -21,6 +21,7 @@ function getFile(fileName, localPath, remotePath, sftpClient, sftpPath) {
                });
             }
             /// for testing this is inside the local write
+            console.log(path.join(sftpPath, fileName);
             try {
                 sftpClient.write ({
                     content: new Buffer(body),
