@@ -7,7 +7,7 @@ var Sftp = require('./sftp');
 var settings = require('./.settings.js');
 
 /// Get the GitHub file using HTTP once notified to do so. 
-function getFile(fileName, localPath, remotePath, sftpClient, sftpPath) {
+function getFile(fileName, localPath, remotePath, sftpClient) {
     var body = '';
    // remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
     https.get(remotePath + '/' + fileName, function(res) {
@@ -15,24 +15,24 @@ function getFile(fileName, localPath, remotePath, sftpClient, sftpPath) {
        res.on('data', function(chunk) { body += chunk; });
        res.on('end', function() {
        //console.log(body)
-            if (localPath !== undefined) {
-                fs.writeFile(path.join(localPath, fileName), body, function(err) {
-                    if (err) { errorHandler(err, 'push4'); return; }
-               });
-            }
-            /// for testing this is inside the local write
-            console.log(path.join(sftpPath, fileName);
-            try {
-                sftpClient.write ({
-                    content: new Buffer(body),
-                    destination: path.join(sftpPath, fileName)
-                }, function(err) {
-                    if (err) { errorHandler(err, 'push2'); return; }
-                });
-            } catch (err) {
-                errorHandler(err, 'push3');    
-            }
-        });
+       if (localPath) {
+            fs.writeFile(path.join(localPath, fileName), body, function(err) {
+                if (err) { errorHandler(err, 'push2'); return; }
+           });
+       }
+                /// for testing this is inside the local write
+                console.log(path.join(sftpPath, fileName);
+                try {
+                    sftpClient.write ({
+                        content: new Buffer(body),
+                        destination: path.join(sftpPath, fileName)
+                    }, function(err) {
+                        if (err) { errorHandler(err, 'push2'); return; }
+                    });
+                } catch (err) {
+                    errorHandler(err, 'push3');    
+                }
+            });
         
     })
     .on('error', function(err) {
@@ -55,11 +55,11 @@ function addHookHandler(localPath, hookName, sftpSettings, sftpPath) {
             errorHandler(err, 'sftpClient');
         });
         for (j = 0; j < modified.length; j++) {
-            getFile(modified[j], localPath, remotePath, sftpClient, sftpPath);
+            getFile(modified[j], localPath, remotePath, sftpClient);
         }
         
         for (j = 0; j < added.length; j++) {
-            getFile(added[j], localPath, remotePath, sftpClient, sftpPath);
+            getFile(added[j], localPath, remotePath, sftpClient);
         }
 
         console.log('Received a push event for %s to %s',
@@ -85,8 +85,8 @@ for (var i = 0; i < settings.hooks.length; i++) {
 http.createServer(function (req, res) {
     for (var i = 0; i < settings.hooks.length; i++) {
         if (req.url === settings.hooks[i].name) {
-            settings.hooks[i].handler(req, res);
-            return;
+             settings.hooks[i].handler(req, res);
+             return;
         }
     }
     res.statusCode = 404;
