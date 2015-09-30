@@ -8,17 +8,29 @@ var settings = require('./.settings.js');
 
 /// Get the GitHub file using HTTP once notified to do so. 
 function getFile(fileName, localPath, remotePath, sftpClient) {
-    var body = '';
+    var body = '', binaryFile = false;
+    if (['.jpg', 'jpeg', '.png', '.gif'].indexOf(fileName.substr(id.length - 4).toLowerCase()) > -1) {
+        binaryFile = true;
+    }
    // remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
     https.get(remotePath + '/' + fileName, function(res) {
+    if (binaryFile) {
+        res.setEncoding('binary');
+    }
        // console.log(res.body);
        res.on('data', function(chunk) { body += chunk; });
        res.on('end', function() {
        //console.log(body)
        if (localPath) {
-            fs.writeFile(path.join(localPath, fileName), body, function(err) {
-                if (err) { errorHandler(err, 'push2'); return; }
-           });
+           if (binaryFile) {     
+               fs.writeFile(path.join(localPath, fileName), body, function(err) {
+                    if (err) { errorHandler(err, 'push2'); return; }
+                    });
+           } else {
+                fs.writeFile(path.join(localPath, fileName), body, function(err) {
+                    if (err) { errorHandler(err, 'push2'); return; }
+                });
+           }
        }
                 /// for testing this is inside the local write
                 console.log(path.join(sftpPath, fileName));
