@@ -7,9 +7,9 @@ var Sftp = require('./sftp');
 var settings = require('./.settings.js');
 
 /// Get the GitHub file using HTTP once notified to do so. 
-function getFile(fileName, localPath, remotePath, sftpClient) {
+function getFile(fileName, localPath, remotePath, sftpClient, sftpPath) {
     var body = '', binaryFile = false;
-    if (['.jpg', 'jpeg', '.png', '.gif'].indexOf(fileName.substr(id.length - 4).toLowerCase()) > -1) {
+    if (['.jpg', 'jpeg', '.png', '.gif'].indexOf(fileName.substr(fileName.length - 4).toLowerCase()) > -1) {
         binaryFile = true;
     }
    // remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
@@ -67,11 +67,11 @@ function addHookHandler(localPath, hookName, sftpSettings, sftpPath) {
             errorHandler(err, 'sftpClient');
         });
         for (j = 0; j < modified.length; j++) {
-            getFile(modified[j], localPath, remotePath, sftpClient);
+            getFile(modified[j], localPath, remotePath, sftpClient, sftpPath);
         }
         
         for (j = 0; j < added.length; j++) {
-            getFile(added[j], localPath, remotePath, sftpClient);
+            getFile(added[j], localPath, remotePath, sftpClient, sftpPath);
         }
 
         console.log('Received a push event for %s to %s',
