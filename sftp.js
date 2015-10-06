@@ -180,7 +180,7 @@ Client.prototype.write = function(options, callback) {
       if (Buffer.isBuffer(content)) {
         var contents = [];
         length = parseInt((content.length - 1) / chunkSize, 10) + 1;
-console.log(length);
+console.log(content.length);
         for (var i = 0 ; i < length; i++) {
           contents.push(content.slice(i * chunkSize, (i + 1) * chunkSize));
         }
