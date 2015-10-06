@@ -14,37 +14,37 @@ function getFile(fileName, localPath, remotePath, sftpClient, sftpPath) {
     }
    // remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
     https.get(remotePath + '/' + fileName, function(res) {
-    if (binaryFile) {
-        res.setEncoding('binary');
-    }
+        if (binaryFile) {
+            res.setEncoding('binary');
+        }
        // console.log(res.body);
        res.on('data', function(chunk) { body += chunk; });
        res.on('end', function() {
-       //console.log(body)
-       if (localPath) {
-           if (binaryFile) {     
-               fs.writeFile(path.join(localPath, fileName), body, function(err) {
-                    if (err) { errorHandler(err, 'push2'); return; }
-                    });
-           } else {
-                fs.writeFile(path.join(localPath, fileName), body, function(err) {
-                    if (err) { errorHandler(err, 'push2'); return; }
-                });
-           }
-       }
-                /// for testing this is inside the local write
-                console.log(path.join(sftpPath, fileName));
-                try {
-                    sftpClient.write ({
-                        content: new Buffer(body),
-                        destination: path.join(sftpPath, fileName)
-                    }, function(err) {
+           //console.log(body)
+           if (localPath) {
+               if (binaryFile) {     
+                   fs.writeFile(path.join(localPath, fileName), body, function(err) {
+                        if (err) { errorHandler(err, 'push2'); return; }
+                        });
+               } else {
+                    fs.writeFile(path.join(localPath, fileName), body, function(err) {
                         if (err) { errorHandler(err, 'push2'); return; }
                     });
-                } catch (err) {
-                    errorHandler(err, 'push3');    
-                }
-            });
+               }
+            }
+                /// for testing this is inside the local write
+            console.log(path.join(sftpPath, fileName));
+            try {
+                sftpClient.write ({
+                    content: new Buffer(body),
+                    destination: path.join(sftpPath, fileName)
+                }, function(err) {
+                    if (err) { errorHandler(err, 'push2'); return; }
+                });
+            } catch (err) {
+                errorHandler(err, 'push3');    
+            }
+        });
         
     })
     .on('error', function(err) {
