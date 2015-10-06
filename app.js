@@ -36,10 +36,9 @@ function getFile(fileName, localPath, remotePath, sftpClient, sftpPath) {
             console.log(path.join(sftpPath, fileName));
             console.log('a ' + body.length);
             console.log('b ' + (new Buffer(body)).length);
-            if (!binaryFile) {body = new Buffer(body);}
             try {
                 sftpClient.write ({
-                    content: body,
+                    content: new Buffer(body),
                     destination: path.join(sftpPath, fileName)
                 }, function(err) {
                     if (err) { errorHandler(err, 'push2'); return; }
