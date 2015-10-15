@@ -3,17 +3,22 @@ var https = require('https');
 var path = require('path');
 var fs = require('fs');
 var gitHubWebhookHandler = require('github-webhook-handler');
+var requestIp = require('request-ip');
+var ssh2 = require('ssh2');
 var Sftp = require('./sftp');
 var settings = require('./.settings.js');
 
 /// Get the GitHub file using HTTP once notified to do so. 
 function getFile(fileName, localPath, remotePath, sftpClient, sftpPath) {
     var body = '', binaryFile = false;
+    if (localPath === undefined && remotePath === undefined) { throw new Error('localPath or remotePath must be defined'); }
     if (['.jpg', 'jpeg', '.png', '.gif'].indexOf(fileName.substr(fileName.length - 4).toLowerCase()) > -1) {
         binaryFile = true;
     }
    // remotePath = 'https://raw.githubusercontent.com/seethespark/gitHubPuller/master';
+    console.log('getting ' + fileName);
     https.get(remotePath + '/' + fileName, function(res) {
+        /// check res status
         if (binaryFile) {
             res.setEncoding('binary');
         }
@@ -22,6 +27,7 @@ function getFile(fileName, localPath, remotePath, sftpClient, sftpPath) {
        res.on('end', function() {
            //console.log(body)
            if (localPath) {
+                /// make the directory if it doesn't exist
                if (binaryFile) {     
                    fs.writeFile(path.join(localPath, fileName), body, function(err) {
                         if (err) { errorHandler(err, 'push2'); return; }
@@ -32,19 +38,22 @@ function getFile(fileName, localPath, remotePath, sftpClient, sftpPath) {
                     });
                }
             }
+            if (sftpPath) {
                 /// for testing this is inside the local write
-            console.log(path.join(sftpPath, fileName));
-            console.log('a ' + body.length);
-            console.log('b ' + (new Buffer(body)).length);
-            try {
-                sftpClient.write ({
-                    content: new Buffer(body),
-                    destination: path.join(sftpPath, fileName)
-                }, function(err) {
-                    if (err) { errorHandler(err, 'push2'); return; }
-                });
-            } catch (err) {
-                errorHandler(err, 'push3');    
+                console.log(path.join(sftpPath, fileName));
+                console.log('a ' + body.length);
+                //console.log('b ' + body);
+                console.log('b ' + (new Buffer(body)).length);
+                try {
+                    sftpClient.write ({
+                        content: new Buffer(body),
+                        destination: path.join(sftpPath, fileName)
+                    }, function(err) {
+                        if (err) { errorHandler(err, 'push2'); return; }
+                    });
+                } catch (err) {
+                    errorHandler(err, 'push3');
+                }
             }
         });
         
@@ -97,6 +106,12 @@ for (var i = 0; i < settings.hooks.length; i++) {
 }
 
 http.createServer(function (req, res) {
+    console.log(requestIp.getClientIp(req));
+    if (settings.gitIPs && settings.gitIPs.indexOf(requestIp.getClientIp(req)) < 0) {
+
+        res.statusCode = 403;
+        res.end('not allows from this address');
+    }
     for (var i = 0; i < settings.hooks.length; i++) {
         if (req.url === settings.hooks[i].name) {
              settings.hooks[i].handler(req, res);
