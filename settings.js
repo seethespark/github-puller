@@ -3,6 +3,7 @@
 */
 var settings = {};
 settings.hooks = [{name: '/gitHub name',
+	secret: 'my secret',
     localPath: '/local path if storing locally',
     sftpPath: '/path on sftp server',
     sftp: {
