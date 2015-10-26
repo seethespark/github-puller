@@ -22,7 +22,7 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
     }
     /// message to tell we are about to get the file
     errorHandler('getting ' + fileName, 'getFile', 'info');
-    http.get(remotePath + '/' + fileName, function(res) {
+    https.get(remotePath + '/' + fileName, function(res) {
         /// check res status
         if (res.statusCode !== 200 && res.statusCode !== 304) {
             errorHandler('status ' + res.statusCode + '. message: ' + res.statusMessage, 'getFile2' )
@@ -68,8 +68,8 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
                 try {
                     sshClient.sftp(function (err, sftp) {
                         if ( err ) {
-                            console.log( "Error, problem starting SFTP: %s", err );
-                            process.exit( 2 );
+                            errorHandler(err, 'getFile.sshClient.sftp');
+                            return;
                         }
                         sftp.mkdirParent = function(dirPath, mode, callback) {
                             var dirPathCurr = '', dirTree = dirPath.split('\\');
@@ -174,7 +174,7 @@ function addHookHandler(localPath, hookName, secret, sshSettings, sftpPath) {
             modified = event.payload.head_commit.modified,
             //remotePath = event.payload.head_commit.url            
             remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
-            remotePath = 'http://localhost:8081/' + event.payload.repository.full_name,
+            //remotePath = 'http://localhost:8081/' + event.payload.repository.full_name,
             j;
         if (sftpPath) {
             var ssh2 = new Ssh2();
@@ -206,11 +206,11 @@ function addHookHandler(localPath, hookName, secret, sshSettings, sftpPath) {
             }
         }
 
-        console.log('Received a push event for %s', event.payload.repository.name);
+        errorHandler('Received a push event for '+ event.payload.repository.name, 'addHookHandler', 'info');
         /// get https://github.com/seethespark/i-flicks/archive/master.zip
     });
     handler.on('error', function (err) {
-        console.error('Error:', err.message);
+        errorHandler(err, 'addHookHandler.1');
     });
     return handler;
 }
@@ -244,6 +244,8 @@ http.createServer(function (req, res) {
 }).listen(7777);
 
 http.createServer(function (req, res) {
+    res.statusCode = 403;
+    res.end('not implemented');
     var filePath = 'C:\\nick\\Git\\nickwhiteley.com\\public\\images\\brew\\beer.jpg'; //path.join(__dirname, 'myfile.mp3');
     var stat = fs.statSync(filePath);
 
