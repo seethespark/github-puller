@@ -172,7 +172,7 @@ function addHookHandler(localPath, hookName, secret, sshSettings, sftpPath) {
         var added = event.payload.head_commit.added,
             removed = event.payload.head_commit.removed,
             modified = event.payload.head_commit.modified,
-            //remotePath = event.payload.head_commit.url,
+            //remotePath = event.payload.head_commit.url            
             remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
             remotePath = 'http://localhost:8081/' + event.payload.repository.full_name,
             j;
