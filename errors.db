@@ -1,9 +1,11 @@
 {"errno":-4058,"code":"ENOENT","path":"c:\\nick\\.settings.js","errorType":"error","dateEntered":{"$$date":1447693814889},"errorLocation":"e:\\Git\\githubpuller\\app.js::deleteFile 1","_id":"0WfIcuZxhtxGeM4O"}
+{"message":"ENOENT, unlink 'c:\\nick\\.settings.js'","errorType":"error","dateEntered":{"$$date":1447695379813},"errorLocation":"e:\\Git\\githubpuller\\app.js::deleteFile 1","_id":"1G8nCdcsOblIqNGJ"}
 {"message":"Received a push event for nickwhiteley.com","errorType":"info","dateEntered":{"$$date":1445847671821},"errorLocation":"C:\\nick\\Git\\gitHubPuller\\app.js::addHookHandler","_id":"1NkVHgn5PZKqoweL"}
 {"message":"c:\\nick\\public\\images\\brew\\beer.jpg written to the local file system","errorType":"info","dateEntered":{"$$date":1445681862558},"errorLocation":"C:\\nick\\Git\\gitHubPuller\\app.js::file sent","_id":"1iVbUGeRmW1P5m3r"}
 {"message":"ENOENT, unlink 'c:\\nick\\.settings.js'","errorType":"error","dateEntered":{"$$date":1447694827112},"errorLocation":"e:\\Git\\githubpuller\\app.js::deleteFile 1","_id":"204YguuQVwHwXjEm"}
 {"message":"getting public/images/brew/beer.jpg","errorType":"info","dateEntered":{"$$date":1445678939675},"errorLocation":"C:\\nick\\Git\\gitHubPuller\\app.js::getFile","_id":"23NJfBQROiUWmLSm"}
 {"message":"getting public/images/brew/beer.jpg","errorType":"info","dateEntered":{"$$date":1445676517463},"errorLocation":"C:\\nick\\Git\\gitHubPuller\\app.js::getFile","_id":"2Usl7Fu5PxuXCpdB"}
+{"message":"Received a push event for gitHubPuller","errorType":"info","dateEntered":{"$$date":1447695379807},"errorLocation":"e:\\Git\\githubpuller\\app.js::addHookHandler","_id":"2igIRKLS0HI3hpz9"}
 {"message":"\\var\\www\\public\\images\\brew\\beer.jpg written to localhost","errorType":"info","dateEntered":{"$$date":1445679052516},"errorLocation":"C:\\nick\\Git\\gitHubPuller\\app.js::file sent","_id":"2l9vmCR6MUFTcMPO"}
 {"message":"Received a push event for gitHubPuller","errorType":"info","dateEntered":{"$$date":1447693985736},"errorLocation":"e:\\Git\\githubpuller\\app.js::addHookHandler","_id":"2vQKaBVvl9n4NFed"}
 {"message":"c:\\nick\\public\\images\\brew\\beer.jpg written to the local file system","errorType":"info","dateEntered":{"$$date":1445678913551},"errorLocation":"C:\\nick\\Git\\gitHubPuller\\app.js::file sent","_id":"3NHaBwZR8hEeKANi"}
