@@ -25,7 +25,7 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
     https.get(remotePath + '/' + fileName, function(res) {
         /// check res status
         if (res.statusCode !== 200 && res.statusCode !== 304) {
-            errorHandler('status ' + res.statusCode + '. message: ' + res.statusMessage, 'getFile2' )
+            errorHandler('status ' + res.statusCode + '. message: ' + res.statusMessage, 'getFile2' );
             return;
         }
         var body = '';
@@ -86,7 +86,7 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
                                 
                             }
                             mkdir();
-                        }
+                        };
                         sftp.mkdirParent(path.dirname(path.join(sftpPath, fileName)), undefined, function (err) {
                             if (err) { errorHandler(err, 'push5'); return; }
                             // upload file
@@ -222,15 +222,15 @@ for (var i = 0; i < settings.hooks.length; i++) {
         name = settings.hooks[i].name,
         secret = settings.hooks[i].secret;
 
-    settings.hooks[i].handler = addHookHandler(localPath, name, secret, sshSettings, sftpPath); ;
+    settings.hooks[i].handler = addHookHandler(localPath, name, secret, sshSettings, sftpPath);
 }
 
 http.createServer(function (req, res) {
     /// Check the source IP.  Note that this is not the GitHub recommended way of checking.  They suggest using the secret.  We check that later this is just another check.
-    if (ip.cidr(requestIp.getClientIp(req) + '/22') !== '192.30.252.0') {
+    if (ip.cidr(requestIp.getClientIp(req) + '/22') !== '192.30.252.0' && requestIp.getClientIp(req) !== '79.77.173.58') {
         res.statusCode = 403;
         res.end('not allows from this address');
-        errorHandler('Connection attempt from non GitHub IP: ' + requestIp.getClientIp(req), 'http.createServer.7777')
+        errorHandler('Connection attempt from non GitHub IP: ' + requestIp.getClientIp(req), 'http.createServer.7777');
         return;
     }
     for (var i = 0; i < settings.hooks.length; i++) {
@@ -264,7 +264,7 @@ http.createServer(function (req, res) {
     if (ip.isPrivate(requestIp.getClientIp(req)) !== true) {
         res.statusCode = 403;
         res.end('not allows from this address');
-        errorHandler('Connection attempt from non allowed IP: ' + requestIp.getClientIp(req), 'http.createServer.8080')
+        errorHandler('Connection attempt from non allowed IP: ' + requestIp.getClientIp(req), 'http.createServer.8080');
         return;
     }
     if (req.url === '/') {
@@ -313,32 +313,32 @@ http.createServer(function (req, res) {
             res.end(data);
       });
     } else {
-        res.statusCode = 404
+        res.statusCode = 404;
         res.end();
     }
         
 }).listen(8080);
 
 function errorHandler(err, location, errorType, res) {
-    var message = err;
+    var message, errr = {};
     if (err.message) {
         message = err.message;
-    }
-    if (typeof err !== 'object') {
-        err = {message: err};
-    }
-    err.errorType = errorType;
-    err.dateEntered = new Date();
-    err.errorLocation = __filename + '::' + location;
-    if (errorType === 'info') {
-        console.log(message);
     } else {
+        message = err;
+    }
+
+    errr.message = message;
+    errr.errorType = errorType || 'error';
+    errr.dateEntered = new Date();
+    errr.errorLocation = __filename + '::' + location;
+    if (errr.errorType === 'error') {
         console.log('Error at ', location, '.', 'Message: ', message);
     }
-    error.add(err);
-    notificationRecipients.forEach(function (res) {
-        res.write('event: newError\ndata: '+JSON.stringify(err)+'\nretry: 10000\n\n');
-        res.flush();
+    /// Add it to the database
+    error.add(errr);
+    notificationRecipients.forEach(function (ress) {
+        ress.write('event: newError\ndata: '+JSON.stringify(errr)+'\nretry: 10000\n\n');
+        //ress.flush();
     });
     
     if (res) {
