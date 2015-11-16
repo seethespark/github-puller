@@ -18,6 +18,7 @@
     "mkdirp": "^0.5.1",
     "request-ip": "^1.1.4",
     "ssh2": "^0.4.11",
-    "streamifier": "^0.1.1"
+    "streamifier": "^0.1.1",
+    "nedb": "~1.2.1",
   }
 }
