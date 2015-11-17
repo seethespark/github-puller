@@ -1,9 +1,9 @@
 {
-  "name": "gitHubPuller",
+  "name": "github-puller",
   "homepage": "https://www.seethespark.com",
   "author": "Nick Whiteley",
   "description": "Respond to GitHub changes and get the latest version of an application.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "main": "app.js",
   "license": "MIT",
@@ -20,5 +20,12 @@
     "ssh2": "^0.4.11",
     "streamifier": "^0.1.1",
     "nedb": "~1.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seethespark/github-puller.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seethespark/github-puller/issues"
   }
 }
