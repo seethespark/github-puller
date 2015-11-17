@@ -7,7 +7,6 @@
     var fs = require('fs');
     var gitHubWebhookHandler = require('github-webhook-handler');
     var requestIp = require('request-ip');
-    //var streamifier = require('streamifier');
     var mkdirp = require('mkdirp');
     var ip = require('ip');
     var Ssh2 = require('ssh2').Client;
