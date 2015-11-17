@@ -14,18 +14,20 @@ var settings = require('./.settings.js');
 var notificationRecipients = [];
 
 /// Get the GitHub file using HTTP once notified to do so. 
-function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
+function getFile(hookName, fileName, localPath, remotePath, sshClient, sftpPath) {
     var binaryFile = false;
-    if (localPath === undefined && remotePath === undefined) { throw new Error('localPath or remotePath must be defined'); }
+    if (localPath === undefined && remotePath === undefined) { 
+        throw new Error('localPath or remotePath must be defined');
+    }
     if (['.jpg', 'jpeg', '.png', '.gif', '.mp3', '.mp4'].indexOf(fileName.substr(fileName.length - 4).toLowerCase()) > -1) {
         binaryFile = true;
     }
     /// message to tell we are about to get the file
-    errorHandler('getting ' + fileName, 'getFile', 'info');
+    errorHandler('getting ' + fileName, 'getFile::' + hookName, 'info');
     https.get(remotePath + '/' + fileName, function(res) {
         /// check res status
         if (res.statusCode !== 200 && res.statusCode !== 304) {
-            errorHandler('status ' + res.statusCode + '. message: ' + res.statusMessage, 'getFile2' );
+            errorHandler('status ' + res.statusCode + '. message: ' + res.statusMessage, 'getFile2::' + hookName );
             return;
         }
         var body = '';
@@ -48,16 +50,16 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
             if (localPath) {
                 /// make the directory if it doesn't exist
                 mkdirp(path.dirname(path.join(localPath, fileName)), function (err) {
-                    if (err) { errorHandler(err, 'push4'); return; }
+                    if (err) { errorHandler(err, 'push4::' + hookName); return; }
                     if (binaryFile) {
                        fs.writeFile(path.join(localPath, fileName), body, 'binary', function(err) {
-                            if (err) { errorHandler(err, 'push2'); return; }
-                                errorHandler(path.join(localPath, fileName) + ' written to the local file system', 'file sent', 'info');
+                            if (err) { errorHandler(err, 'push2::' + hookName); return; }
+                                errorHandler(path.join(localPath, fileName) + ' written to the local file system', 'file sent::' + hookName, 'info');
                             });
                     } else {
                         fs.writeFile(path.join(localPath, fileName), body, function(err) {
-                            if (err) { errorHandler(err, 'push2'); return; }
-                            errorHandler(path.join(localPath, fileName) + ' written to the local file system', 'file sent', 'info');
+                            if (err) { errorHandler(err, 'push2::' + hookName); return; }
+                            errorHandler(path.join(localPath, fileName) + ' written to the local file system', 'file sent::' + hookName, 'info');
                         });
                     }
                 });
@@ -68,7 +70,7 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
                 try {
                     sshClient.sftp(function (err, sftp) {
                         if ( err ) {
-                            errorHandler(err, 'getFile.sshClient.sftp');
+                            errorHandler(err, 'getFile.sshClient.sftp::' + hookName);
                             return;
                         }
                         sftp.mkdirParent = function(dirPath, mode, callback) {
@@ -88,7 +90,7 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
                             mkdir();
                         };
                         sftp.mkdirParent(path.dirname(path.join(sftpPath, fileName)), undefined, function (err) {
-                            if (err) { errorHandler(err, 'push5'); return; }
+                            if (err) { errorHandler(err, 'push5::' + hookName); return; }
                             // upload file
                             var readStream = streamifier.createReadStream( body);
                             //console.log(readStream._object.length);
@@ -98,7 +100,7 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
                             writeStream.on(
                                 'close',
                                 function () {
-                                    errorHandler(path.join(sftpPath, fileName) + ' written to ' + sshClient.config.host, 'file sent', 'info');
+                                    errorHandler(path.join(sftpPath, fileName) + ' written to ' + sshClient.config.host, 'file sent::' + hookName, 'info');
                                     sftp.end();
                                     sshClient.end();
                                 }
@@ -107,7 +109,7 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
                             writeStream.on(
                                 'error',
                                 function (err) {
-                                    errorHandler(err, 'push7'); 
+                                    errorHandler(err, 'push7::' + hookName); 
                                     sftp.end();
                                     sshClient.end();
                                     return;
@@ -121,14 +123,14 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
                         });
                     });
                 } catch (err) {
-                    errorHandler(err, 'push3');
+                    errorHandler(err, 'push3::' + hookName);
                 }
             }
         });
         
     })
     .on('error', function(err) {
-        if (err) { errorHandler(err, 'push1'); return; }
+        if (err) { errorHandler(err, 'push1::' + hookName); return; }
     });
 }
 
@@ -140,19 +142,19 @@ function getFile(fileName, localPath, remotePath, sshClient, sftpPath) {
  * @param {string} sftpPath - path on the ssh server where the file will be uploaded to.
  * @param {Requester~requestCallback} callback - returns an error or undefined
  **/
-function deleteFile(fileName, localPath, sshClient, sftpPath) {
+function deleteFile(hookName, fileName, localPath, sshClient, sftpPath) {
     if (localPath) {
         fs.unlink(path.join(localPath, fileName), function(err) {
-            if (err) { errorHandler(err, 'deleteFile 1'); return; }
-            errorHandler(path.join(localPath, fileName) + ' deleted from the local file system', 'file delete', 'info');
+            if (err) { errorHandler(err, 'deleteFile 1::' + hookName); return; }
+            errorHandler(path.join(localPath, fileName) + ' deleted from the local file system', 'file delete::' + hookName, 'info');
         });
     }
     if (sftpPath) {
         sshClient.sftp(function (err, sftp) {
-            if ( err ) { errorHandler(err, 'deleteFile 2'); return; }
+            if ( err ) { errorHandler(err, 'deleteFile 2::' + hookName); return; }
             sftp.unlink(path.dirname(path.join(sftpPath, fileName)), function (err) {
-                if (err) { errorHandler(err, 'deleteFile 3'); return; }
-                errorHandler(path.join(localPath, fileName) + ' deleted from ' + sshClient.config.host, 'file delete', 'info');
+                if (err) { errorHandler(err, 'deleteFile 3::' + hookName); return; }
+                errorHandler(path.join(localPath, fileName) + ' deleted from ' + sshClient.config.host, 'file delete::' + hookName, 'info');
             });
         });
     }
@@ -160,13 +162,13 @@ function deleteFile(fileName, localPath, sshClient, sftpPath) {
 
 /**
  * Set up the listener for web hooks.
- * @param {string} localPath - path on hte local machine if hte file will be stored there
  * @param {string} hookName - the name setup in GitHub
+ * @param {string} localPath - path on hte local machine if hte file will be stored there
  * @param {string} secret - password for GitHub file check
  * @param {object} sshSettings - ssh server settings like host and port.
  * @param {string} sftpPath - ssh server path to store the files
  **/
-function addHookHandler(localPath, hookName, secret, sshSettings, sftpPath) {
+function addHookHandler(hookName, localPath, secret, sshSettings, sftpPath) {
     var handler = gitHubWebhookHandler({ path: hookName, secret: secret });
     handler.on('push', function (event) {
         var added = event.payload.head_commit.added,
@@ -180,37 +182,37 @@ function addHookHandler(localPath, hookName, secret, sshSettings, sftpPath) {
             var ssh2 = new Ssh2();
             ssh2.connect(sshSettings);
             ssh2.on('error', function(err) {
-                errorHandler(err, 'sshClient');
+                errorHandler(err, 'sshClient::' + hookName);
             });
             ssh2.on('ready', function() {
                 for (j = 0; j < modified.length; j++) {
-                    getFile(modified[j], localPath, remotePath, ssh2, sftpPath);
+                    getFile(hookName, modified[j], localPath, remotePath, ssh2, sftpPath);
                 }
                 
                 for (j = 0; j < added.length; j++) {
-                    getFile(added[j], localPath, remotePath, ssh2, sftpPath);
+                    getFile(hookName, added[j], localPath, remotePath, ssh2, sftpPath);
                 }
                 for (j = 0; j < removed.length; j++) {
-                    deleteFile(removed[j], localPath, ssh2, sftpPath);
+                    deleteFile(hookName, removed[j], localPath, ssh2, sftpPath);
                 }
             });
         } else {   
             for (j = 0; j < modified.length; j++) {
-                getFile(modified[j], localPath, remotePath);
+                getFile(hookName, modified[j], localPath, remotePath);
             }
             for (j = 0; j < added.length; j++) {
-                getFile(added[j], localPath, remotePath);
+                getFile(hookName, added[j], localPath, remotePath);
             }
             for (j = 0; j < removed.length; j++) {
-                deleteFile(removed[j], localPath);
+                deleteFile(hookName, removed[j], localPath);
             }
         }
 
-        errorHandler('Received a push event for '+ event.payload.repository.name, 'addHookHandler', 'info');
+        errorHandler('Received a push event for '+ event.payload.repository.name, 'addHookHandler::' + hookName, 'info');
         /// get https://github.com/seethespark/i-flicks/archive/master.zip
     });
     handler.on('error', function (err) {
-        errorHandler(err, 'addHookHandler.1');
+        errorHandler(err, 'addHookHandler.1::' + hookName);
     });
     return handler;
 }
@@ -219,17 +221,17 @@ for (var i = 0; i < settings.hooks.length; i++) {
     var localPath = settings.hooks[i].localPath, 
         sshSettings = settings.hooks[i].ssh,
         sftpPath = settings.hooks[i].sftpPath,
-        name = settings.hooks[i].name,
+        hookName = settings.hooks[i].name,
         secret = settings.hooks[i].secret;
 
-    settings.hooks[i].handler = addHookHandler(localPath, name, secret, sshSettings, sftpPath);
+    settings.hooks[i].handler = addHookHandler(hookName, localPath, secret, sshSettings, sftpPath);
 }
 
 http.createServer(function (req, res) {
     /// Check the source IP.  Note that this is not the GitHub recommended way of checking.  They suggest using the secret.  We check that later this is just another check.
     if (ip.cidr(requestIp.getClientIp(req) + '/22') !== '192.30.252.0' && requestIp.getClientIp(req) !== '79.77.173.58') {
         res.statusCode = 403;
-        res.end('not allows from this address');
+        res.end('not allowed from this address');
         errorHandler('Connection attempt from non GitHub IP: ' + requestIp.getClientIp(req), 'http.createServer.7777');
         return;
     }
@@ -241,7 +243,11 @@ http.createServer(function (req, res) {
     }
     res.statusCode = 404;
     res.end('no such location');
-}).listen(7777);
+}).listen(7777, function(err) {
+    var addr = this.address();
+    console.log('Listening for GitHub hooks on %s:%d', ip.address(), addr.port);
+    console.log('For error console see http://%s:8080/public/toolbox.html', ip.address());
+});
 
 http.createServer(function (req, res) {
     res.statusCode = 403;
@@ -267,9 +273,7 @@ http.createServer(function (req, res) {
         errorHandler('Connection attempt from non allowed IP: ' + requestIp.getClientIp(req), 'http.createServer.8080');
         return;
     }
-    if (req.url === '/') {
-        res.end('Hello');
-    } else if (req.url === '/errors') {
+    if (req.url === '/errors') {
         error.list(30, undefined, function(err, data) {
             if (err) { res.statusCode = 500; res.statusMessage = err.message; }
             else {
@@ -314,9 +318,9 @@ http.createServer(function (req, res) {
       });
     } else {
         res.statusCode = 404;
-        res.end();
+        res.end('nothing to see here, move along.');
     }
-        
+
 }).listen(8080);
 
 function errorHandler(err, location, errorType, res) {
