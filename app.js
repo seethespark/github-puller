@@ -16,7 +16,17 @@
 
     var notificationRecipients = [];
 
+    /**
+     * Standardised error handler which also writes to a database.
+     * @param {object/string} err - An Error object or a string message.  Required.
+     * @param {string} location - where does the error occur.  Sometimes includes parameters to indicate conditions too.
+     * @param {string} errorType - error or info.  Optional and defaults to error
+     * @param {object} res - Optional but if included this returns a 500 to the response.
+     **/
     function errorHandler(err, location, errorType, res) {
+        if (err === undefined) {
+            return;
+        }
         var message, errr = {};
         if (err.message) {
             message = err.message;
@@ -45,9 +55,18 @@
     }
 
     /// Get the GitHub file using HTTP once notified to do so.
-    function getFile(hookName, fileName, localPath, remotePath, sshClient, sftpPath) {
+    /**
+     * Get the GitHub file using HTTP once notified to do so.
+     * @param {string} hookName - The name of the hook.  only used to make meaningful errors.  Required.
+     * @param {string} fileName - The name of the file er are updating.  Required.
+     * @param {string} gitHubPath - Remote server path.  Required.
+     * @param {string} localPath - If copying locally then this is where.  Optional.
+     * @param {object} sshClient - Client for SSH when copying to a server on our network.  Optional.
+     * @param {string} sftpPath - Path on the SSH server where to put files.  Optional.  If undefined then previous setting is ignored.
+     **/
+    function getFile(hookName, fileName, gitHubPath, localPath, sshClient, sftpPath) {
         var binaryFile = false, binaryFiles;
-        if (localPath === undefined && remotePath === undefined) {
+        if (localPath === undefined && sftpPath === undefined) {
             throw new Error('localPath or remotePath must be defined');
         }
         binaryFiles = ['.jpg', 'jpeg', '.png', '.gif', '.mp3', '.mp4'];
@@ -56,7 +75,7 @@
         }
         /// message to tell we are about to get the file
         errorHandler('getting ' + fileName, 'getFile::' + hookName, 'info');
-        https.get(remotePath + '/' + fileName, function (res) {
+        https.get(gitHubPath + '/' + fileName, function (res) {
             /// check res status
             if (res.statusCode !== 200 && res.statusCode !== 304) {
                 errorHandler('status ' + res.statusCode + '. message: ' + res.statusMessage, 'getFile2::' + hookName);
@@ -223,8 +242,7 @@
     function addHookHandler(hookName, localPath, secret, sshSettings, sftpPath) {
         var handler = gitHubWebhookHandler({path: hookName, secret: secret});
         handler.on('push', function (event) {
-            event.payload.commits.reverse().forEach(function (commit) {
-
+            event.payload.commits.forEach(function (commit) {
                 var added = commit.added,
                     removed = commit.removed,
                     modified = commit.modified,
@@ -239,10 +257,10 @@
                     });
                     ssh2.on('ready', function () {
                         for (j = 0; j < modified.length; j += 1) {
-                            getFile(hookName, modified[j], localPath, gitHubPath, ssh2, sftpPath);
+                            getFile(hookName, modified[j], gitHubPath, localPath, ssh2, sftpPath);
                         }
                         for (j = 0; j < added.length; j += 1) {
-                            getFile(hookName, added[j], localPath, gitHubPath, ssh2, sftpPath);
+                            getFile(hookName, added[j], gitHubPath, localPath, ssh2, sftpPath);
                         }
                         for (j = 0; j < removed.length; j += 1) {
                             deleteFile(hookName, removed[j], localPath, ssh2, sftpPath);
@@ -250,10 +268,10 @@
                     });
                 } else {
                     for (j = 0; j < modified.length; j += 1) {
-                        getFile(hookName, modified[j], localPath, gitHubPath);
+                        getFile(hookName, modified[j], gitHubPath, localPath);
                     }
                     for (j = 0; j < added.length; j += 1) {
-                        getFile(hookName, added[j], localPath, gitHubPath);
+                        getFile(hookName, added[j], gitHubPath, localPath);
                     }
                     for (j = 0; j < removed.length; j += 1) {
                         deleteFile(hookName, removed[j], localPath);
@@ -373,6 +391,9 @@
 
     }).listen(8080);
 
+    /**
+     * Use .settings to setup the server.
+     **/
     (function start() {
         var i, localPath, sshSettings, sftpPath, hookName, secret;
         for (i = 0; i < settings.hooks.length; i += 1) {
