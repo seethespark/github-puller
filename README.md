@@ -1,13 +1,13 @@
-# gitHubPuller
+# github-puller
 Listen for GitHub changes (Web Hooks) and update local copies of applications.  This allows test servers to always remain up to date. It is designed for small projects but there is no particular reason why it wouldn't work for dozens of big projects. Originally written to allow lightweight development on a mobile device which then sends to the server running Node.js for testing.
 
-gitHubPuller runs on the edge of your network (DMZ) so that GitHub is able to contact it, on port 7777 by default. When it receives notification of a change it connects to GitHub and downloads the latest version from the **master** branch. The downloaded file can be placed on the local machine or placed on a server on the network using sftp.
+github-puller runs on the edge of your network (DMZ) so that GitHub is able to contact it, on port 7777 by default. When it receives notification of a change it connects to GitHub and downloads the latest version from the **master** branch. The downloaded file can be placed on the local machine or placed on a server on the network using sftp.
 
-![Network diagram 1](https://raw.githubusercontent.com/seethespark/gitHubPuller/master/public/network.png "Network diagram")
+![Network diagram 1](https://raw.githubusercontent.com/seethespark/github-puller/master/public/network.png "Network diagram")
 
 ## Getting started
 
-npm install gitHubPuller (not yet on NPM so clone it)
+npm install github-puller (not yet on NPM so clone it)
 
 Create .settings.js (note the leading . making the file hidden). An example is supplied in settings.js.
 
@@ -27,11 +27,16 @@ If localPath is not specified then it us ignored and if sftpPath is not specifie
         };
 
 Make sure the username specified has write access to the SSH server's file system.
-gitHubPuller doesn't initialise the source so make sure the destination already has any existing code.  If you want this feature then get in touch.
+
+github-puller doesn't initialise the source so make sure the destination already has any existing code.  If you want this feature then get in touch.
+
 Follow GitHub's [instructions](https://developer.github.com/webhooks/) for setting up Webhooks Set the Payload URL as http://[your server]:7777/[hook path].
+
 Set the Content type to application/json.
+
 Set a Secret.
-Set your firewall to forward requests on port 7777 to the gutHubPuller server.
+
+Set your firewall to forward requests on port 7777 to the github-puller server.
 ## More
 Errors are written to a local database.  To view go to http://[server]:8080/public/toolbox.html  Only local computers can access this.
 
