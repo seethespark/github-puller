@@ -302,6 +302,7 @@
                 return;
             }
         }
+        errorHandler('Request to missing hook: ' + req.url, 'http.createServer.7777');
         res.statusCode = 404;
         res.end('no such location');
     }).listen(7777, function () {
