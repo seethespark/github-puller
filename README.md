@@ -3,7 +3,7 @@ Listen for GitHub changes (Web Hooks) and update local copies of applications.  
 
 gitHubPuller runs on the edge of your network (DMZ) so that GitHub is able to contact it, on port 7777 by default. When it receives notification of a change it connects to GitHub and downloads the latest version from the **master** branch. The downloaded file can be placed on the local machine or placed on a server on the network using sftp.
 
-["Network diagram"](https://raw.githubusercontent.com/seethespark/gitHubPuller/master/public/network.png)
+![Network diagram 1](https://raw.githubusercontent.com/seethespark/gitHubPuller/master/public/network.png "Network diagram")
 
 ## Getting started
 
