@@ -171,42 +171,46 @@ function deleteFile(hookName, fileName, localPath, sshClient, sftpPath) {
 function addHookHandler(hookName, localPath, secret, sshSettings, sftpPath) {
     var handler = gitHubWebhookHandler({ path: hookName, secret: secret });
     handler.on('push', function (event) {
-        var added = event.payload.head_commit.added,
-            removed = event.payload.head_commit.removed,
-            modified = event.payload.head_commit.modified,
-            //remotePath = event.payload.head_commit.url            
-            remotePath =  'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
-            //remotePath = 'http://localhost:8081/' + event.payload.repository.full_name,
-            j;
-        if (sftpPath) {
-            var ssh2 = new Ssh2();
-            ssh2.connect(sshSettings);
-            ssh2.on('error', function(err) {
-                errorHandler(err, 'sshClient::' + hookName);
-            });
-            ssh2.on('ready', function() {
+        event.payload.commits.reverse().forEach(function (commit) {
+
+            var added = commit.added,
+                removed = commit.removed,
+                modified = commit.modified,
+                //gitHubPath = event.payload.head_commit.url            
+                gitHubPath =  commit.url, //'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
+                //gitHubPath = 'http://localhost:8081/' + event.payload.repository.full_name,
+                j;
+            if (sftpPath) {
+                var ssh2 = new Ssh2();
+                ssh2.connect(sshSettings);
+                ssh2.on('error', function(err) {
+                    errorHandler(err, 'sshClient::' + hookName);
+                });
+                ssh2.on('ready', function() {
+                    for (j = 0; j < modified.length; j++) {
+                        getFile(hookName, modified[j], localPath, gitHubPath, ssh2, sftpPath);
+                    }
+                    
+                    for (j = 0; j < added.length; j++) {
+                        getFile(hookName, added[j], localPath, gitHubPath, ssh2, sftpPath);
+                    }
+                    for (j = 0; j < removed.length; j++) {
+                        deleteFile(hookName, removed[j], localPath, ssh2, sftpPath);
+                    }
+                });
+            } else {   
                 for (j = 0; j < modified.length; j++) {
-                    getFile(hookName, modified[j], localPath, remotePath, ssh2, sftpPath);
+                    getFile(hookName, modified[j], localPath, gitHubPath);
                 }
-                
                 for (j = 0; j < added.length; j++) {
-                    getFile(hookName, added[j], localPath, remotePath, ssh2, sftpPath);
+                    getFile(hookName, added[j], localPath, gitHubPath);
                 }
                 for (j = 0; j < removed.length; j++) {
-                    deleteFile(hookName, removed[j], localPath, ssh2, sftpPath);
+                    deleteFile(hookName, removed[j], localPath);
                 }
-            });
-        } else {   
-            for (j = 0; j < modified.length; j++) {
-                getFile(hookName, modified[j], localPath, remotePath);
             }
-            for (j = 0; j < added.length; j++) {
-                getFile(hookName, added[j], localPath, remotePath);
-            }
-            for (j = 0; j < removed.length; j++) {
-                deleteFile(hookName, removed[j], localPath);
-            }
-        }
+
+        });
 
         errorHandler('Received a push event for '+ event.payload.repository.name, 'addHookHandler::' + hookName, 'info');
         /// get https://github.com/seethespark/i-flicks/archive/master.zip
