@@ -7,7 +7,7 @@ github-puller runs on the edge of your network (DMZ) so that GitHub is able to c
 
 ## Getting started
 
-npm install github-puller (not yet on NPM so clone it)
+npm install github-puller 
 
 Create .settings.js (note the leading . making the file hidden). An example is supplied in settings.js.
 
