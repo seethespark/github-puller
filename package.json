@@ -1,9 +1,9 @@
 {
   "name": "gitHubPuller",
-  "homepage": "https://www.nickwhiteley.com",
+  "homepage": "https://www.seethespark.com",
   "author": "Nick Whiteley",
   "description": "Respond to GitHub changes and get the latest version of an application.",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "private": false,
   "main": "app.js",
   "license": "MIT",
