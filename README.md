@@ -26,8 +26,12 @@ If localPath is not specified then it us ignored and if sftpPath is not specifie
             }
         };
 
-Make sure the username specified has write access to the server's file system.
+Make sure the username specified has write access to the SSH server's file system.
 gitHubPuller doesn't initialise the source so make sure the destination already has any existing code.  If you want this feature then get in touch.
+Follow GitHub's [instructions](https://developer.github.com/webhooks/) for setting up Webhooks Set the Payload URL as http://[your server]:7777/[hook path].
+Set the Content type to application/json.
+Set a Secret.
+Set your firewall to forward requests on port 7777 to the gutHubPuller server.
 ## More
 Errors are written to a local database.  To view go to http://[server]:8080/public/toolbox.html  Only local computers can access this.
 
