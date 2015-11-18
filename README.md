@@ -37,9 +37,11 @@ Set the Content type to application/json.
 Set a Secret.
 
 Set your firewall to forward requests on port 7777 to the github-puller server.
+
+If your internal SSH server is running code which requires a service restart before it is displayed then you will need some sort of file watcher.  If it is Node.js code then nodemon or forever are the two alternatices.  Forever needs the server to run as root if it is watching for file changes so nodemon seems to work better.
 ## More
 Errors are written to a local database.  To view go to http://[server]:8080/public/toolbox.html  Only local computers can access this.
 
 Only GitHub's IP range can access the server and also the Secret is checked.
 
-Any feedback would be tremendously useful.
+Any feedback to githubpuller@seethespark.com would be tremendously useful.
