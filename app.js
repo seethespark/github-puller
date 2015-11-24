@@ -137,7 +137,7 @@
                             }
                             
                             sftp.mkdirParent = function (dirPath, mode, callback) {
-                                var dirPathCurr = '/', dirTree = dirPath.split('\\');
+                                var dirPathCurr = '/', dirTree = dirPath.split('/');
                                 dirTree.shift();
 
                                 function mkdir(err) {
@@ -152,45 +152,52 @@
                                 }
                                 mkdir();
                             };
-                            sftp.mkdirParent(path.dirname(path.join(sftpPath, fileName)), undefined, function (err) {
+                            sftp.mkdirParent(path.dirname(path.posix.join(sftpPath, fileName)), undefined, function (err) {
                                 if (err && err.code !== 4) { /// code 4 means the directory exists (it may mean other things too though!)
                                     errorHandler(err, 'push5::' + hookName);
-                                    return;
+                                    //return;
                                 }
-                                // upload file
-                                //var readStream = streamifier.createReadStream(body);
-                                //console.log(readStream._object.length);
-
-                                /// Note that this uses POSIX seperators so assumes the remote server is OK with this.  If Windows then it might need changing.
-                                var writeStream = sftp.createWriteStream(path.posix.join(sftpPath, fileName), {encoding: 'binary'});
-
-                                // what to do when transfer finishes
-                                writeStream.on(
-                                    'close',
-                                    function () {
-                                        errorHandler(path.posix.join(sftpPath, fileName) + ' written to ' + sshClient.config.host, 'file sent::' + hookName, 'info');
-                                        sftp.end();
-                                        sshClient.clients -= 1;
-                                            //console.log(sshClient.clients);
-                                        if (sshClient.clients === 0) {
-                                            sshClient.end();
-                                        }
-                                    }
-                                );
-
-                                writeStream.on(
-                                    'error',
-                                    function (err) {
-                                        errorHandler(err, 'push7::' + hookName);
-                                        sftp.end();
-                                        sshClient.end();
+                                /// check the dir has been made.
+                                sftp.stat(path.dirname(path.posix.join(sftpPath, fileName)), function (err, stat) {
+                                    if (err) {
+                                        errorHandler(err, 'push8::' + hookName);
                                         return;
                                     }
-                                );
-                                // initiate transfer of file, both of these work
-                                //readStream.pipe( writeStream );
-                                writeStream.write(body);
-                                writeStream.end();
+                                    // upload file
+                                    //var readStream = streamifier.createReadStream(body);
+                                    //console.log(readStream._object.length);
+
+                                    /// Note that this uses POSIX seperators so assumes the remote server is OK with this.  If Windows then it might need changing.
+                                    var writeStream = sftp.createWriteStream(path.posix.join(sftpPath, fileName), {encoding: 'binary'});
+
+                                    // what to do when transfer finishes
+                                    writeStream.on(
+                                        'close',
+                                        function () {
+                                            errorHandler(path.posix.join(sftpPath, fileName) + ' written to ' + sshClient.config.host, 'file sent::' + hookName, 'info');
+                                            sftp.end();
+                                            sshClient.clients -= 1;
+                                                //console.log(sshClient.clients);
+                                            if (sshClient.clients === 0) {
+                                                sshClient.end();
+                                            }
+                                        }
+                                    );
+
+                                    writeStream.on(
+                                        'error',
+                                        function (err) {
+                                            errorHandler(err, 'push7::' + hookName);
+                                            sftp.end();
+                                            sshClient.end();
+                                            return;
+                                        }
+                                    );
+                                    // initiate transfer of file, both of these work
+                                    //readStream.pipe( writeStream );
+                                    writeStream.write(body);
+                                    writeStream.end();
+                                });
                             });
                         });
                     } catch (err) {
