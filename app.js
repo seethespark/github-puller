@@ -68,6 +68,10 @@
         if (localPath === undefined && sftpPath === undefined) {
             throw new Error('localPath or remotePath must be defined');
         }
+        if (sshClient.clients === undefined) {
+            sshClient.clients = 0;
+        }
+        sshClient.clients += 1;
         binaryFiles = ['.jpg', 'jpeg', '.png', '.gif', '.mp3', '.mp4'];
         if (binaryFiles.indexOf(fileName.substr(fileName.length - 4).toLowerCase()) > -1) {
             binaryFile = true;
@@ -131,13 +135,15 @@
                                 errorHandler(err, 'getFile.sshClient.sftp::' + hookName);
                                 return;
                             }
+                            
                             sftp.mkdirParent = function (dirPath, mode, callback) {
-                                var dirPathCurr = '', dirTree = dirPath.split('\\');
+                                var dirPathCurr = '/', dirTree = dirPath.split('\\');
                                 dirTree.shift();
 
-                                function mkdir() {
+                                function mkdir(err) {
                                     var dir = dirTree.shift();
                                     dirPathCurr += dir + '/';
+                                    //console.log(dirPathCurr);
                                     if (dirTree.length > 0) {
                                         sftp.mkdir(dirPathCurr, mode, mkdir);
                                     } else {
@@ -147,22 +153,28 @@
                                 mkdir();
                             };
                             sftp.mkdirParent(path.dirname(path.join(sftpPath, fileName)), undefined, function (err) {
-                                if (err) {
+                                if (err && err.code !== 4) { /// code 4 means the directory exists (it may mean other things too though!)
                                     errorHandler(err, 'push5::' + hookName);
                                     return;
                                 }
                                 // upload file
                                 //var readStream = streamifier.createReadStream(body);
                                 //console.log(readStream._object.length);
-                                var writeStream = sftp.createWriteStream(path.join(sftpPath, fileName), {encoding: 'binary'});
+
+                                /// Note that this uses POSIX seperators so assumes the remote server is OK with this.  If Windows then it might need changing.
+                                var writeStream = sftp.createWriteStream(path.posix.join(sftpPath, fileName), {encoding: 'binary'});
 
                                 // what to do when transfer finishes
                                 writeStream.on(
                                     'close',
                                     function () {
-                                        errorHandler(path.join(sftpPath, fileName) + ' written to ' + sshClient.config.host, 'file sent::' + hookName, 'info');
+                                        errorHandler(path.posix.join(sftpPath, fileName) + ' written to ' + sshClient.config.host, 'file sent::' + hookName, 'info');
                                         sftp.end();
-                                        sshClient.end();
+                                        sshClient.clients -= 1;
+                                            //console.log(sshClient.clients);
+                                        if (sshClient.clients === 0) {
+                                            sshClient.end();
+                                        }
                                     }
                                 );
 
