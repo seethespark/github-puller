@@ -73,7 +73,7 @@
             binaryFile = true;
         }
         /// message to tell we are about to get the file
-        errorHandler('getting ' + fileName, 'getFile::' + hookName, 'info');
+        errorHandler('getting ' + gitHubPath + '/' + fileName, 'getFile::' + hookName, 'info');
         https.get(gitHubPath + '/' + fileName, function (res) {
             /// check res status
             if (res.statusCode !== 200 && res.statusCode !== 304) {
@@ -245,7 +245,7 @@
                 var added = commit.added,
                     removed = commit.removed,
                     modified = commit.modified,
-                    gitHubPath = commit.url, //'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/master',
+                    gitHubPath = 'https://raw.githubusercontent.com/' + event.payload.repository.full_name + '/' + commit.id,
                     //gitHubPath = 'http://localhost:8081/' + event.payload.repository.full_name,
                     j;
                 if (sftpPath) {

@@ -50,7 +50,6 @@ var iflicks = (function iflicks() {
     }
 
     function displayTableBody(rowList, colList, updateable, tableId) {
-        console.log(rowList);
         var i, j, k, l, row, cell, match, table, tableBody, cellText;
 
         table = document.getElementById(tableId);
@@ -240,10 +239,11 @@ var iflicks = (function iflicks() {
                 //console.log(e)
                 itemList1.shift();
                 itemList1.push(JSON.parse(e.data));
-                console.log(itemList1);
+                //console.log(itemList1);
                 displayTableBody(JSON.parse(JSON.stringify(itemList1)), JSON.parse(JSON.stringify(colList1)), true, 'list');
             }, false);
-            setTimeout(function() {console.log(newErrorEvents);}, 500);
+        } else {
+            setTimeout(function () { location.reload(); }, 20000);
         }
     }
 
