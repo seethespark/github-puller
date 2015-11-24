@@ -68,10 +68,13 @@
         if (localPath === undefined && sftpPath === undefined) {
             throw new Error('localPath or remotePath must be defined');
         }
-        if (sshClient.clients === undefined) {
+        if (sshClient && sshClient.clients === undefined) {
             sshClient.clients = 0;
         }
-        sshClient.clients += 1;
+        if (sshClient) {
+            sshClient.clients += 1;
+        }
+        
         binaryFiles = ['.jpg', 'jpeg', '.png', '.gif', '.mp3', '.mp4'];
         if (binaryFiles.indexOf(fileName.substr(fileName.length - 4).toLowerCase()) > -1) {
             binaryFile = true;
