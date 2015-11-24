@@ -311,8 +311,8 @@
     }
     http.createServer(function (req, res) {
         var i;
-        /// Check the source IP.  Note that this is not the GitHub recommended way of checking.  They suggest using the secret.  We check that later this is just another check.
-        if (ip.cidr(requestIp.getClientIp(req) + '/22') !== '192.30.252.0' && requestIp.getClientIp(req) !== '79.77.173.58') {
+        /// Check the source IP, the ::ff bit is IP6.  Note that this is not the GitHub recommended way of checking.  They suggest using the secret.  We check that later this is just another check.
+        if (ip.cidr(requestIp.getClientIp(req).replace('::ffff:', '') + '/22') !== '192.30.252.0' && requestIp.getClientIp(req) !== '79.77.173.58') {
             res.statusCode = 403;
             res.end('not allowed from this address');
             errorHandler('Connection attempt from non GitHub IP: ' + requestIp.getClientIp(req), 'http.createServer.7777');
